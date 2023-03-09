@@ -14,6 +14,24 @@ var alarmSettings = null;
 // Current Values for temperature settings
 var valueSettings = null;
 
+window.onbeforeunload = function() {
+  // Remove Sim Channel Members
+  pubnub.objects.removeChannelMembers({
+    channel: `Private.${pubnub.getUUID()}-iot`,
+    uuids: Object.keys(iotDevices)
+  });
+
+  // Terminate Web Workers
+  for(key in iotDevices){
+    try{
+      iotDevices[key].worker.terminate();
+    }
+    catch(e){
+      console.log(e);
+    }
+  }
+};
+
 // Called on page load
 async function initialize () {
 
